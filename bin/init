@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# Print usage if needed
+if [ $# -lt 1 ] || [ "$1" != "$(echo $1 | egrep --color=none '(start|stop|restart|flush)')" ]
+then
+    cat <<EOF >&2
+Usage: $0 start|stop|restart|flush
+    start      Start service
+    stop       Stop service
+    restart    Restart service
+    flush      Delete logs from elasticsearch
+EOF
+    exit 1
+fi
+
+# Run stack
+start() {
+    # Run elasticsearch
+    elasticsearch-1.1.1/bin/elasticsearch -d
+
+    # Run LogStash
+    logstash-1.4.0/bin/logstash -f config.conf
+
+    # Run Kibana4
+    cd kibana-3.0.1
+    open http://$(ipconfig getifaddr en0):8000 && python -m SimpleHTTPServer
+
+    echo -e "Starting the stack…"
+}
+
+# Stop stack
+stop() {
+    # Shutdown elasticsearch
+    curl -XPOST 'http://localhost:9200/_shutdown'
+
+    # Shutdown LogStash
+    curl -XPOST 'http://localhost:9200/_shutdown'
+}
+
+
+if [ $1 == "start" ]; then
+    start
+fi
+
+# Run Stop
+if [ $1 == "stop" ]; then
+    stop
+fi
+    
+if [ $1 == "restart" ]; then
+    $0 stop
+    $1 start
+fi
+
+# Flush logs from elasticsearch
+if [ $1 == "flush" ]; then
+    curl -XDELETE 'http://localhost:9200/_all'
+fi
