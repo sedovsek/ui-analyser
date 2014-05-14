@@ -15,11 +15,11 @@ fi
 
 # Run stack
 start() {
-    # Run elasticsearch
+    # Run elasticsearch 1.1.1
     elasticsearch-1.1.1/bin/elasticsearch -d
 
-    # Run LogStash
-    logstash-1.4.0/bin/logstash -f config.conf
+    # Run LogStash 1.4.0
+    logstash-1.4.0/bin/logstash -f ../config/logstsh.conf
 
     # Run Kibana4
     cd kibana-3.0.1
@@ -34,7 +34,7 @@ stop() {
     curl -XPOST 'http://localhost:9200/_shutdown'
 
     # Shutdown LogStash
-    curl -XPOST 'http://localhost:9200/_shutdown'
+    # todo
 }
 
 
@@ -54,5 +54,9 @@ fi
 
 # Flush logs from elasticsearch
 if [ $1 == "flush" ]; then
+    # Remove tracks where logstash left off with the inputs
+    # rm ~/.sincedb_*
+
+    # Deletes from elasticsearch
     curl -XDELETE 'http://localhost:9200/_all'
 fi
