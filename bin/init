@@ -45,7 +45,11 @@ fi
 # Imports logs to elasticsearch
 if [ $1 == "import" ]; then
     # Run LogStash 1.4.0
-    logstash-1.4.0/bin/logstash -f config/logstash.conf
+
+    logstashConfig="logstash.debug.conf"
+    # $logstashConfig = logstash.conf
+
+    logstash-1.4.0/bin/logstash -f config/$logstashConfig
 fi
 
 # Flush logs from elasticsearch
