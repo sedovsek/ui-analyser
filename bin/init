@@ -14,20 +14,25 @@ EOF
     exit 1
 fi
 
+# Config
+logstashVersion="1.4.1"
+elasticsearchVersion="1.1.1"
+kibanaVersion="kibana"
+
 # Run stack
 start() {
-    # Run elasticsearch 1.1.1
-    elasticsearch-1.1.1/bin/elasticsearch -d
+    # Run elasticsearch
+    elasticsearch-$elasticsearchVersion/bin/elasticsearch -d
 
-    # Run Kibana 3
-    cd kibana-3.0.1
-    open http://$(ipconfig getifaddr en0):8000 && python -m SimpleHTTPServer
+    # Run Kibana
+    cd kibana-$kibanaVersion
+    open http://localhost:8000 && python -m SimpleHTTPServer
 }
 
 # Stop stack
 stop() {
     # Shutdown elasticsearch
-    curl -XPOST http://$(ipconfig getifaddr en0):9200/_shutdown
+    curl -XPOST http://localhost:9200/_shutdown
 }
 
 
@@ -44,12 +49,12 @@ fi
 
 # Imports logs to elasticsearch
 if [ $1 == "import" ]; then
-    # Run LogStash 1.4.0
+    # Run LogStash
 
-    logstashConfig="logstash.debug.conf"
-    # $logstashConfig = logstash.conf
+    # logstashConfig="logstash.debug.conf"
+    logstashConfig="logstash.conf"
 
-    logstash-1.4.0/bin/logstash -f config/$logstashConfig
+    logstash-$logstashVersion/bin/logstash -f config/$logstashConfig
 fi
 
 # Flush logs from elasticsearch
@@ -58,5 +63,5 @@ if [ $1 == "flush" ]; then
     # rm ~/.sincedb_*
 
     # Deletes from elasticsearch
-    curl -XDELETE http://$(ipconfig getifaddr en0):9200/_all
+    curl -XDELETE http://localhost:9200/_all
 fi
