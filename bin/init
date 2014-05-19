@@ -27,7 +27,7 @@ start() {
 # Stop stack
 stop() {
     # Shutdown elasticsearch
-    curl -XPOST 'http://localhost:9200/_shutdown'
+    curl -XPOST http://$(ipconfig getifaddr en0):9200/_shutdown
 }
 
 
@@ -58,5 +58,5 @@ if [ $1 == "flush" ]; then
     # rm ~/.sincedb_*
 
     # Deletes from elasticsearch
-    curl -XDELETE 'http://localhost:9200/_all'
+    curl -XDELETE http://$(ipconfig getifaddr en0):9200/_all
 fi
